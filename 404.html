@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Tidak Ditemukan | Media Mate</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Styling khusus halaman error biar makin kece */
+        .error-box {
+            text-align: center;
+            padding: 80px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+        .error-box h1 {
+            font-size: 6rem;
+            color: var(--tk-color); /* Pake warna cyan sebagai aksen */
+            margin-bottom: 0;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+        }
+        .error-box h2 {
+            font-size: 2rem;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .error-box p {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 30px;
+        }
+        .btn-home {
+            background-color: var(--tk-color);
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-home:hover {
+            background-color: #00d4df;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <div class="error-box">
+            <h1>404</h1>
+            <h2>Halaman Nyasar Bos!</h2>
+            <p>Video, alat, atau halaman yang lu cari nggak ada di sini.</p>
+            <a href="/media-mate/index" class="btn-home">
+                <i class="fas fa-home"></i> Balik ke Beranda
+            </a>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
