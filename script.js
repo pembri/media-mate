@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loading');
 
     if (generateBtn) {
-        generateBtn.addEventListener('click', async () => {
+        generateBtn.addEventListener('click', () => {
             const url = urlInput.value.trim();
             
             // Validasi input kosong
@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Validasi URL YouTube (Mendukung youtube.com dan youtu.be)
-            const ytRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
+            // Validasi URL YouTube
+            const ytRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be|www\.youtube\.com\/shorts)\/.+$/;
             if (!ytRegex.test(url)) {
                 alert('URL tidak valid. Harap masukkan link YouTube yang benar.');
                 return;
@@ -39,96 +39,46 @@ document.addEventListener('DOMContentLoaded', () => {
             generateBtn.disabled = true;
             generateBtn.innerText = 'Processing...';
 
-            try {
-                // MENGGUNAKAN COBALT API (Gratis, Tanpa API Key, Sangat Stabil)
-                // Kita melakukan 2 request: 1 untuk Video (MP4) dan 1 untuk Audio (MP3)
-                
-                const apiEndpoint = 'https://api.cobalt.tools/api/json';
-
-                // Setup Headers untuk Cobalt API
-                const requestOptions = {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                };
-
-                // Request Video (MP4 - 1080p max for stability)
-                const videoBody = JSON.stringify({
-                    url: url,
-                    vCodec: "h264",
-                    vQuality: "1080", 
-                    aFormat: "best"
-                });
-
-                // Request Audio (MP3)
-                const audioBody = JSON.stringify({
-                    url: url,
-                    isAudioOnly: true,
-                    aFormat: "mp3"
-                });
-
-                // Jalankan Fetch secara paralel agar lebih cepat
-                const [videoRes, audioRes] = await Promise.all([
-                    fetch(apiEndpoint, { ...requestOptions, body: videoBody }),
-                    fetch(apiEndpoint, { ...requestOptions, body: audioBody })
-                ]);
-
-                const videoData = await videoRes.json();
-                const audioData = await audioRes.json();
-
-                // Cek jika API merespon error
-                if (videoData.status === 'error' || audioData.status === 'error') {
-                    throw new Error('Gagal mengambil data dari server. Pastikan video bersifat publik.');
-                }
-
-                // Render UI Hasil
-                renderResults(videoData, audioData);
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert(`Terjadi kesalahan: ${error.message}`);
-            } finally {
-                // Kembalikan state tombol dan loading
+            // Simulasi loading sebentar biar UI terasa natural
+            setTimeout(() => {
                 loadingIndicator.style.display = 'none';
                 generateBtn.disabled = false;
                 generateBtn.innerText = 'Generate';
-            }
+                renderResults(url);
+            }, 1000);
         });
     }
 
-    // === 3. FUNGSI RENDER HASIL ===
-    function renderResults(videoData, audioData) {
-        // Tampilkan container
+    // === 3. FUNGSI RENDER HASIL (MENGGUNAKAN IFRAME API) ===
+    function renderResults(url) {
         resultContainer.style.display = 'block';
+        
+        // Encode URL biar aman dibaca oleh API
+        const encodedUrl = encodeURIComponent(url);
 
-        // Buat struktur HTML dinamis
         const htmlContent = `
             <div class="media-info">
                 <div class="media-details">
-                    <h3>Pilih Format Unduhan:</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Server telah mengekstrak link unduhan langsung Anda.</p>
+                    <h3>Siap Diunduh!</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Klik tombol di dalam kotak di bawah ini. Proses konversi akan berjalan langsung di tombol tersebut.</p>
                 </div>
             </div>
 
             <div class="download-grid">
-                <!-- Card Video -->
-                <div class="download-card">
+                <div class="download-card" style="flex-direction: column; align-items: flex-start; gap: 15px;">
                     <div class="format-info">
                         <p>Video (MP4)</p>
-                        <span>Kualitas Tinggi</span>
+                        <span>Kualitas 1080p / 720p</span>
                     </div>
-                    <a href="${videoData.url}" target="_blank" class="btn-download">Download</a>
+                    <iframe style="width:100%; height:60px; border:0; overflow:hidden; border-radius:6px;" scrolling="no" src="https://loader.to/api/button/?url=${encodedUrl}&f=1080&color=ff0000"></iframe>
                 </div>
 
-                <!-- Card Audio -->
-                <div class="download-card">
+                <div class="download-card" style="flex-direction: column; align-items: flex-start; gap: 15px;">
                     <div class="format-info">
                         <p>Audio (MP3)</p>
                         <span>Musik / Podcast</span>
                     </div>
-                    <a href="${audioData.url}" target="_blank" class="btn-download" style="background-color: #333; border: 1px solid var(--border-color);">Download</a>
+                    <iframe style="width:100%; height:60px; border:0; overflow:hidden; border-radius:6px;" scrolling="no" src="https://loader.to/api/button/?url=${encodedUrl}&f=mp3&color=333333"></iframe>
                 </div>
             </div>
         `;
