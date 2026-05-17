@@ -3,90 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YTCloud Downloader - Unduh Video & Audio YouTube Gratis</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="YTCloud Downloader adalah tool gratis untuk mengunduh video (MP4) dan audio (MP3) dari YouTube dengan kualitas tinggi, cepat, dan tanpa watermark.">
-    <meta name="keywords" content="youtube downloader, unduh video youtube, youtube to mp3, youtube to mp4, ytcloud, download youtube gratis">
-    <meta name="author" content="Pembri">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Canonical Link (Tanpa .html) -->
-    <link rel="canonical" href="https://domain-lo.com/">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://domain-lo.com/">
-    <meta property="og:title" content="YTCloud Downloader - Unduh Video & Audio YouTube">
-    <meta property="og:description" content="Unduh video dan audio YouTube kualitas tinggi dengan cepat.">
-    
-    <!-- Schema.js (Structured Data) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "YTCloud Downloader",
-      "url": "https://domain-lo.com/",
-      "description": "Aplikasi web untuk mengunduh video dan audio dari YouTube.",
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "All",
-      "creator": {
-        "@type": "Person",
-        "name": "Pembri"
-      }
-    }
-    </script>
-
-    <!-- Link CSS -->
-    <link rel="stylesheet" href="style.css">
+    <title>YTCloud Downloader</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
 </head>
 <body>
-
-    <!-- HEADER -->
+    <!-- Header -->
     <header>
-        <div class="nav-container">
-            <a href="/" class="logo">YTCloud<span> Downloader</span></a>
-            <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-            </button>
-            <nav class="nav-links" id="nav-links">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/privacy">Privacy Policy</a>
+        <div class="container">
+            <div class="logo">
+                <h1>YTCloud <span>Downloader</span></h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="active">Home</a>
+                <a href="about.html">About</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="contact.html">Contact</a>
             </nav>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main>
-        <section class="hero-section">
-            <h1>Unduh Video YouTube Gratis</h1>
-            <p>Konversi dan unduh video atau audio dari YouTube dalam format MP4 dan MP3 dengan kualitas terbaik.</p>
-            
-            <div class="input-group">
-                <input type="text" id="yt-url" placeholder="Paste link YouTube di sini (contoh: https://youtu.be/...)">
-                <button id="generate-btn" class="btn-generate">Generate</button>
+    <main class="main-content">
+        <div class="container">
+            <div class="hero">
+                <h2>Download Video & Audio YouTube</h2>
+                <p class="subtitle">Cepat, Gratis, Tanpa Iklan</p>
             </div>
-        </section>
 
-        <!-- Loading Indicator -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Mengekstrak link unduhan, mohon tunggu...</p>
+            <div class="input-section">
+                <input type="text" id="urlInput" placeholder="Paste link YouTube di sini..." autocomplete="off">
+                <button id="generateBtn">Generate</button>
+            </div>
+
+            <!-- Result Area -->
+            <div id="result" class="result-container hidden">
+                <div class="video-info">
+                    <img id="thumbnail" src="" alt="Thumbnail">
+                    <div class="info">
+                        <h3 id="title"></h3>
+                        <p id="duration"></p>
+                    </div>
+                </div>
+
+                <div class="formats" id="formats">
+                    <!-- Formats akan diisi oleh JavaScript -->
+                </div>
+            </div>
         </div>
-
-        <!-- Result Container (Diisi oleh JavaScript) -->
-        <div id="result-container" class="result-container"></div>
     </main>
 
-    <!-- FOOTER -->
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 YTCloud Downloader by Pembri. All rights reserved.</p>
+        <div class="container">
+            <p>&copy; 2026 YTCloud Downloader by Pembri. All Rights Reserved.</p>
+        </div>
     </footer>
 
-    <!-- Link JS -->
-    <script src="script.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/downloader.js"></script>
 </body>
 </html>
