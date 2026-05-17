@@ -1,0 +1,13 @@
+name = "ytcloud-downloader"
+main = "worker.js"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Routes (sesuaikan dengan domain kamu)
+# routes = [
+#   { pattern = "downloader.kamu.com/api/*", custom_domain = true }
+# ]
+
+# Environment variables (kalau butuh nanti)
+# [vars]
+# API_KEY = "your_key"
