@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replace Kode HTML</title>
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-color: #e0e0e0;
+            --primary-red: #ff4b2b;
+            --primary-yellow: #fbc02d;
+            --primary-green: #4caf50;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-top: 4px solid var(--primary-green);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-yellow);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-yellow);
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #252525;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 80px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-login { background-color: var(--primary-yellow); color: #000; }
+        .btn-scan { background-color: #2196f3; color: #fff; width: 100%; }
+        .btn-replace { background-color: var(--primary-red); color: #fff; width: 100%; }
+        .btn-restore { background-color: var(--primary-green); color: #fff; }
+        .btn-logout { background-color: #555; color: #fff; float: right; font-size: 10px; margin-top: -40px;}
+
+        button:disabled {
+            background-color: #444;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-info { background: #1e3a5f; color: #fff; border: 1px solid #2196f3; }
+        .status-success { background: #1b4332; color: #fff; border: 1px solid var(--primary-green); }
+        .status-error { background: #4a1c1c; color: #fff; border: 1px solid var(--primary-red); }
+
+        #fileList {
+            margin-top: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #111;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .file-item {
+            padding: 8px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-yellow);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Replace Kode HTML</h1>
+    
+    <div id="loginSection" class="section">
+        <label for="githubToken">GitHub API Token:</label>
+        <input type="password" id="githubToken" placeholder="Paste GitHub Token di sini...">
+        <button class="btn-login" onclick="saveToken()">Login & Simpan Token</button>
+    </div>
+
+    <div id="mainSection" style="display: none;">
+        <button class="btn-logout" onclick="logout()">Logout</button>
+        
+        <div class="section" style="border-color: var(--primary-green);">
+            <label>Fitur Keamanan:</label>
+            <button id="restoreBtn" class="btn-restore" onclick="restoreBackup()">Kembalikan Kode Ke Sebelumnya (Undo)</button>
+            <p style="font-size: 11px; margin-top: 5px; color: #888;">*Tombol ini aktif jika ada data backup terakhir. Berguna jika terjadi error setelah replace.</p>
+        </div>
+
+        <div class="section">
+            <label>1. Kode yang ingin diganti (Old Code):</label>
+            <textarea id="oldCode" placeholder="Contoh: https://link.deezer.com/s/..."></textarea>
+            
+            <div class="btn-group">
+                <button id="scanBtn" class="btn-scan" onclick="startScan()">Cari di Semua File HTML</button>
+            </div>
+
+            <div id="scanResult" style="display: none; margin-top: 25px; border-top: 1px dashed #555; padding-top: 20px;">
+                <label style="color: var(--primary-green);">File yang ditemukan:</label>
+                <div id="fileList"></div>
+                
+                <div style="margin-top: 20px;">
+                    <label>2. Kode Baru (New Code):</label>
+                    <textarea id="newCode" placeholder="Contoh: https://www.deezer.com/artist/..."></textarea>
+                    <button id="replaceBtn" class="btn-replace" onclick="executeReplace()">Ganti Kode Sekarang!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="status"></div>
+</div>
+
+<script>
+    const OWNER = 'pembri';
+    const REPO = 'ytcloud-downloader';
+    let GITHUB_TOKEN = '';
+    let foundFiles = [];
+
+    // Helper untuk encode/decode Base64 UTF-8 (mencegah error karakter aneh)
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
+    function b64EncodeUnicode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+                return String.fromCharCode('0x' + p1);
+        }));
+    }
+
+    window.onload = () => {
+        const savedToken = localStorage.getItem('gh_token');
+        if (savedToken) {
+            GITHUB_TOKEN = savedToken;
+            showMain();
+        }
+        checkBackup();
+    };
+
+    function showMain() {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainSection').style.display = 'block';
+    }
+
+    function saveToken() {
+        const token = document.getElementById('githubToken').value.trim();
+        if (!token) return alert('Token jangan kosong!');
+        localStorage.setItem('gh_token', token);
+        GITHUB_TOKEN = token;
+        showMain();
+        showStatus('Login berhasil & Token disimpan.', 'success');
+    }
+
+    function logout() {
+        localStorage.removeItem('gh_token');
+        location.reload();
+    }
+
+    function showStatus(msg, type) {
+        const statusDiv = document.getElementById('status');
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'status-' + type;
+        statusDiv.innerHTML = msg;
+    }
+
+    async function startScan() {
+        const oldText = document.getElementById('oldCode').value;
+        if (!oldText) return alert('Masukkan kode yang mau dicari dulu!');
+
+        const scanBtn = document.getElementById('scanBtn');
+        scanBtn.disabled = true;
+        showStatus('<div class="loader"></div> Mengambil struktur repository...', 'info');
+        
+        foundFiles = [];
+        const fileListDiv = document.getElementById('fileList');
+        fileListDiv.innerHTML = '';
+        document.getElementById('scanResult').style.display = 'none';
+
+        try {
+            // Ambil semua file di repo
+            const treeRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/main?recursive=1`, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            });
+            const treeData = await treeRes.json();
+
+            if (!treeData.tree) {
+                throw new Error(treeData.message || 'Gagal ambil struktur repo. Cek token lo.');
+            }
+
+            // Filter khusus file .html
+            const htmlFiles = treeData.tree.filter(f => f.path.endsWith('.html') && f.type === 'blob');
+            
+            if(htmlFiles.length === 0) {
+                showStatus('Tidak ada file .html di repository ini.', 'error');
+                scanBtn.disabled = false;
+                return;
+            }
+
+            let scannedCount = 0;
+
+            // Looping file satu per satu dengan indikator progres
+            for (const file of htmlFiles) {
+                scannedCount++;
+                showStatus(`<div class="loader"></div> Scan file ${scannedCount} dari ${htmlFiles.length}...<br><small>${file.path}</small>`, 'info');
+                
+                try {
+                    // Gunakan API git/blobs (lebih cepat dan stabil untuk read dari pada API contents)
+                    const blobRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/blobs/${file.sha}`, {
+                        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                    });
+                    
+                    if (!blobRes.ok) continue;
+
+                    const blobData = await blobRes.json();
+                    
+                    // Decode base64 dengan aman
+                    const contentBase64 = blobData.content.replace(/\n/g, '');
+                    const decodedContent = b64DecodeUnicode(contentBase64);
+
+                    if (decodedContent.includes(oldText)) {
+                        foundFiles.push({
+                            path: file.path,
+                            sha: file.sha, // simpan SHA asli buat update/restore
+                            content: decodedContent
+                        });
+                        fileListDiv.innerHTML += `<div class="file-item"><span>📄 ${file.path}</span> <span style="color:var(--primary-green)">✓ Ditemukan</span></div>`;
+                    }
+                } catch (e) {
+                    console.warn(`Gagal membaca ${file.path}`, e);
+                }
+            }
+
+            if (foundFiles.length > 0) {
+                document.getElementById('scanResult').style.display = 'block';
+                showStatus(`SELESAI! Ketemu di ${foundFiles.length} file.`, 'success');
+            } else {
+                showStatus('Selesai scan. Kode tersebut tidak ditemukan di file .html manapun.', 'error');
+            }
+
+        } catch (err) {
+            showStatus('Error: ' + err.message, 'error');
+        } finally {
+            scanBtn.disabled = false;
+        }
+    }
+
+    async function executeReplace() {
+        const oldText = document.getElementById('oldCode').value;
+        const newText = document.getElementById('newCode').value;
+        if (!newText) return alert('Kode baru jangan kosong!');
+
+        if (!confirm(`Yakin mau ganti kode di ${foundFiles.length} file? Sistem akan mem-backup kode lama secara otomatis.`)) return;
+
+        const replaceBtn = document.getElementById('replaceBtn');
+        replaceBtn.disabled = true;
+
+        // Backup to LocalStorage (simpan path, dan content lama)
+        localStorage.setItem('last_backup', JSON.stringify(foundFiles));
+        checkBackup();
+
+        let updatedCount = 0;
+
+        try {
+            for (const file of foundFiles) {
+                updatedCount++;
+                showStatus(`<div class="loader"></div> Mereplace file ${updatedCount} dari ${foundFiles.length}...<br><small>${file.path}</small>`, 'info');
+
+                // Lakukan replace string
+                // Pakai split.join agar semua instance di dalam file tersebut terganti
+                const updatedContent = file.content.split(oldText).join(newText);
+                const encodedContent = b64EncodeUnicode(updatedContent);
+
+                // API untuk update file (membutuhkan file.sha dari content yang eksis)
+                const updateRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.path}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Automated replace code: ${file.path}`,
+                        content: encodedContent,
+                        sha: file.sha 
+                    })
+                });
+
+                if (!updateRes.ok) {
+                    const errData = await updateRes.json();
+                    throw new Error(`Gagal update ${file.path}: ${errData.message}`);
+                }
+            }
+            
+            showStatus(`🔥 MANTAP! ${foundFiles.length} file berhasil di-replace. Cek website atau repository lu.`, 'success');
+            document.getElementById('scanResult').style.display = 'none';
+        } catch (err) {
+            showStatus('Proses terhenti karena error: ' + err.message, 'error');
+        } finally {
+            replaceBtn.disabled = false;
+        }
+    }
+
+    function checkBackup() {
+        const backup = localStorage.getItem('last_backup');
+        const btn = document.getElementById('restoreBtn');
+        if (backup) {
+            const parsed = JSON.parse(backup);
+            btn.disabled = false;
+            btn.innerHTML = `Kembalikan Kode Ke Sebelumnya (${parsed.length} File)`;
+        } else {
+            btn.disabled = true;
+            btn.innerHTML = 'Tidak Ada Backup';
+        }
+    }
+
+    async function restoreBackup() {
+        const backupData = JSON.parse(localStorage.getItem('last_backup'));
+        if (!backupData || backupData.length === 0) return;
+
+        if (!confirm('Yakin mau balikin ke kode semula (undo)? Ini akan menimpa kode yang baru saja lu replace.')) return;
+
+        const btn = document.getElementById('restoreBtn');
+        btn.disabled = true;
+
+        let restoredCount = 0;
+
+        try {
+            for (const file of backupData) {
+                restoredCount++;
+                showStatus(`<div class="loader"></div> Proses Restore ${restoredCount} dari ${backupData.length}...<br><small>${file.path}</small>`, 'info');
+
+                // Ambil SHA TERBARU dari file di GitHub karena SHA sudah berubah setelah kita edit
+                const currentFileRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.path}`, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                const currentFileData = await currentFileRes.json();
+                
+                // Encode content lama yang ada di backup
+                const encodedContent = b64EncodeUnicode(file.content);
+
+                const restoreRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.path}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Undo/Restore previous code: ${file.path}`,
+                        content: encodedContent,
+                        sha: currentFileData.sha // PENTING: pakai sha yang baru ditarik
+                    })
+                });
+
+                if(!restoreRes.ok) {
+                    const errData = await restoreRes.json();
+                    throw new Error(`Gagal restore ${file.path}: ${errData.message}`);
+                }
+            }
+            showStatus('♻️ RESTORE BERHASIL! Kode kembali seperti sebelum diganti.', 'success');
+            localStorage.removeItem('last_backup');
+            checkBackup();
+        } catch (err) {
+            showStatus('Gagal restore: ' + err.message, 'error');
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
