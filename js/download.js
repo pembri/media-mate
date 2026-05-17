@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultContainer.classList.add('hidden');
 
         try {
-            const response = await fetch('/api/download', {  // Akan diubah sesuai Worker nanti
+            const response = await fetch('https://worker-ytcloud.pembriahmad526.workers.dev/api/download', {  // Akan diubah sesuai Worker nanti
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: url })
